@@ -1,4 +1,4 @@
-# 🎓 College Digital Notice Board (Department-Wise)
+# College Digital Notice Board (Department-Wise)
 
 A clean, responsive, and student-friendly **Department-Wise Digital Notice Board** frontend web application built using **React** and modern CSS.
 
@@ -6,7 +6,7 @@ This project enables students and faculty to view, filter, search, publish, and 
 
 ---
 
-## 👥 Project Team Members
+## Project Team Members
 
 | S.No. | Student Name | University Roll No. | Section | Department |
 | :---: | :--- | :---: | :---: | :---: |
@@ -15,18 +15,18 @@ This project enables students and faculty to view, filter, search, publish, and 
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- **🏢 Department-Wise Filter**: View notices specifically for **CSE**, **ECE**, **Mechanical**, **Civil**, **Exam Cell**, **Placement Cell**, or **All Departments**.
-- **🔍 Instant Search**: Real-time keyword search across notice titles and descriptions.
-- **➕ Post New Notice**: Interactive form allowing faculty or class representatives to publish new circulars with custom title, department, and description.
-- **🗑️ Delete Notice**: Simple delete feature to remove outdated notices directly from the board.
-- **🏷️ Color-Coded Badges**: Department-specific badge styling for easy visual identification.
-- **📱 Fully Responsive**: Works smoothly on mobile screens, tablets, laptops, and digital display monitors.
+- **Department-Wise Filter**: View notices specifically for **CSE**, **ECE**, **Mechanical**, **Civil**, **Exam Cell**, **Placement Cell**, or **All Departments**.
+- **Instant Search**: Real-time keyword search across notice titles and descriptions.
+- **Post New Notice**: Interactive form allowing faculty or class representatives to publish new circulars with custom title, department, and description.
+- **Delete Notice**: Simple delete feature to remove outdated notices directly from the board.
+- **Color-Coded Badges**: Department-specific badge styling for easy visual identification.
+- **Fully Responsive**: Works smoothly on mobile screens, tablets, laptops, and digital display monitors.
 
 ---
 
-## 🚀 How to Run the Project Locally
+##  How to Run the Project Locally
 
 ### Prerequisites
 Make sure you have [Node.js](https://nodejs.org/) installed on your system.
@@ -57,7 +57,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your system.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Department-Wise Digital Notice Board/
@@ -73,7 +73,7 @@ Department-Wise Digital Notice Board/
 
 ---
 
-## 💻 Tech Stack Used
+## Tech Stack Used
 
 - **Frontend Library**: React (with `useState` hooks)
 - **Styling**: Pure CSS3 (Flexbox, CSS Grid, Responsive Design)
