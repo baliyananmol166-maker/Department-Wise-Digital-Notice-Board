@@ -1,111 +1,81 @@
-# 📢 Department-Wise Digital Notice Board
+# 🎓 College Digital Notice Board (Department-Wise)
 
-A modern, responsive, and feature-rich **Department-Wise Digital Notice Board** built using **React** and modern CSS. Designed specifically for colleges, universities, and academic institutions to broadcast announcements, circulars, exam datesheets, placement notices, and emergency alerts.
+A clean, responsive, and student-friendly **Department-Wise Digital Notice Board** frontend web application built using **React** and modern CSS.
 
----
-
-## ✨ Features Included
-
-### 1. 🏢 Department-Wise Categorization
-- Dedicated tabs for all major departments:
-  - **All Departments** (Central college overview)
-  - **CSE** (Computer Science & Engineering)
-  - **IT** (Information Technology)
-  - **ECE** (Electronics & Communication)
-  - **ME** (Mechanical Engineering)
-  - **CE** (Civil Engineering)
-  - **MBA** (Management Studies)
-  - **Exam Cell** (Controller of Examinations)
-  - **Admin Office** (Dean, Registrar & Central Library)
-- Real-time notice counter badge on each department tab.
-
-### 2. 🚨 Live Emergency & Urgent Ticker
-- Top scrolling marquee displaying high-priority announcements and urgent alerts.
-- One-click instant navigation to view the active urgent notice.
-
-### 3. 🔍 Search & Multi-Criteria Filtering
-- **Live Search**: Instant keyword search across titles, content, official reference numbers, tags, and faculty names.
-- **Category Filter**: Academic, Exams & Results, Placements & Internships, Events & Workshops, Urgent Alerts, General Circulars.
-- **Priority Filter**: High (Urgent 🔴), Medium (Important 🟡), Low (Normal 🔵).
-- **Sorting Options**: Newest First, Oldest First, Priority Rank, Alphabetical (A-Z).
-- **View Switcher**: Toggle between **Card Grid View** and **Compact List View**.
-
-### 4. 📄 Interactive Notice Details Modal
-- Official circular format with Reference Number (e.g. `REF: CSE/2026/CAP-402`).
-- Target Audience indicator (e.g. `B.Tech CSE - 7th/8th Semester`).
-- Detailed announcement body.
-- Downloadable attachment files with simulated file download.
-- **Print Official Circular**: Clean print stylesheet automatically formatting the notice for physical paper or PDF export (`Ctrl + P`).
-- Share link / copy reference button.
-
-### 5. ✍️ "Post Notice" Faculty / Admin Form
-- Interactive form allowing department coordinators or admins to publish new circulars.
-- Fields: Title, Department, Category, Priority, Target Audience, Issued By, Expiry Date, Content, Attachments, Tags, and Pin to Top.
-- Real-time reactivity: New notices appear instantly on the board and persist via `localStorage`.
-
-### 6. 📺 Smart TV / Kiosk Display Mode
-- Fullscreen mode designed for wall-mounted TV monitors in college hallways and department corridors.
-- Auto-rotates notices every 8 seconds with an animated countdown progress bar.
-- Play / Pause controls, next/prev slide navigation, and fullscreen toggle.
-
-### 7. 🌓 Dark / Light Theme & Live Clock
-- Toggle between sleek Dark Mode and clean Academic Light Mode.
-- Live updating digital clock with date in the top bar.
+This project enables students and faculty to view, filter, search, publish, and manage departmental circulars, exam notifications, and campus announcements in one place.
 
 ---
 
-## 🚀 How to Run the Project
+## 👥 Project Team Members
 
-### Option A: Modern React with Vite (Recommended)
+| S.No. | Student Name | University Roll No. | Section | Department |
+| :---: | :--- | :---: | :---: | :---: |
+| **1.** | **Anshika** | `2400320100224` | **CSE-15** | Computer Science & Engineering |
+| **2.** | **Archana** | `2400320100267` | **CSE-15** | Computer Science & Engineering |
 
-1. **Install dependencies** (already configured):
+---
+
+## ✨ Key Features
+
+- **🏢 Department-Wise Filter**: View notices specifically for **CSE**, **ECE**, **Mechanical**, **Civil**, **Exam Cell**, **Placement Cell**, or **All Departments**.
+- **🔍 Instant Search**: Real-time keyword search across notice titles and descriptions.
+- **➕ Post New Notice**: Interactive form allowing faculty or class representatives to publish new circulars with custom title, department, and description.
+- **🗑️ Delete Notice**: Simple delete feature to remove outdated notices directly from the board.
+- **🏷️ Color-Coded Badges**: Department-specific badge styling for easy visual identification.
+- **📱 Fully Responsive**: Works smoothly on mobile screens, tablets, laptops, and digital display monitors.
+
+---
+
+## 🚀 How to Run the Project Locally
+
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your system.
+
+### Steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/baliyananmol166-maker/Department-Wise-Digital-Notice-Board.git
+   cd Department-Wise-Digital-Notice-Board
+   ```
+
+2. **Install dependencies**:
    ```bash
    npm install
    ```
 
-2. **Start the local development server**:
+3. **Start the development server**:
    ```bash
    npm run dev
    ```
-   Open your browser at `http://localhost:3000` (or the URL displayed in the terminal).
+   Open your browser and navigate to: `http://localhost:3000`
 
-3. **Build for Production**:
+4. **Build for Production**:
    ```bash
    npm run build
    ```
 
 ---
 
-### Option B: Standalone Zero-Install HTML Version
-
-If you need to show or test the notice board immediately without starting a terminal:
-- Double-click [`notice_board_standalone.html`](./notice_board_standalone.html) in your file explorer.
-- It loads React 18 and Babel directly via CDN in any modern web browser!
-
----
-
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
 Department-Wise Digital Notice Board/
-├── index.html                     # HTML shell with Google Fonts & Lucide icons
-├── notice_board_standalone.html   # Zero-setup standalone demo version
-├── package.json                   # React 18, Lucide React, and Vite configs
-├── vite.config.js                 # Vite dev server configuration (port 3000)
+├── index.html                     # Main HTML shell
+├── package.json                   # Project scripts and dependencies
+├── vite.config.js                 # Vite server configuration
 ├── src/
-│   ├── main.jsx                   # React root entry point
-│   ├── App.jsx                    # Core App component with state & filters
-│   ├── index.css                  # Custom styling (light/dark theme, print, kiosk)
-│   ├── data/
-│   │   └── mockNotices.js         # Realistic college departments and notices dataset
-│   └── components/
-│       ├── Header.jsx             # Top bar, branding, live clock, theme toggle
-│       ├── NoticeTicker.jsx       # Urgent alerts scrolling banner
-│       ├── StatsRow.jsx           # Metric cards (Total, Urgent, Pinned, Filtered)
-│       ├── DepartmentBar.jsx      # Department tabs with count badges
-│       ├── FilterControls.jsx     # Search bar, category chips, priority, view toggle
-│       ├── NoticeCard.jsx         # Card component for grid and list views
-│       ├── NoticeDetailModal.jsx  # Full circular modal with download & print
-│       ├── AddNoticeModal.jsx     # Faculty/Admin circular submission form
-│       └── KioskMode.jsx          # Fullscreen Smart TV display auto-slider
+│   ├── main.jsx                   # React application entry point
+│   ├── App.jsx                    # Core Notice Board component (State, Filter, CRUD)
+│   └── index.css                  # Clean student styling & responsive layout
+└── README.md                      # Project documentation & team details
 ```
+
+---
+
+## 💻 Tech Stack Used
+
+- **Frontend Library**: React (with `useState` hooks)
+- **Styling**: Pure CSS3 (Flexbox, CSS Grid, Responsive Design)
+- **Build Tool**: Vite
+- **Version Control**: Git & GitHub
