@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Department-Wise Digital Notice Board (Standalone Demo)</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- React & ReactDOM CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for in-browser JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --brand-primary: #2563eb;
+      --brand-secondary: #4f46e5;
+      --urgent-color: #dc2626;
+      --urgent-bg: #fef2f2;
+      --urgent-border: #fca5a5;
+      --medium-color: #d97706;
+      --medium-bg: #fffbeb;
+      --medium-border: #fcd34d;
+      --low-color: #2563eb;
+      --low-bg: #eff6ff;
+      --low-border: #bfdbfe;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    [data-theme='dark'] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --border-color: #374151;
+      --border-focus: #60a5fa;
+      --text-primary: #f9fafb;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --urgent-bg: rgba(220, 38, 38, 0.15);
+      --urgent-border: rgba(220, 38, 38, 0.35);
+      --medium-bg: rgba(217, 119, 6, 0.15);
+      --medium-border: rgba(217, 119, 6, 0.35);
+      --low-bg: rgba(37, 99, 235, 0.15);
+      --low-border: rgba(37, 99, 235, 0.35);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input, select, textarea { font-family: inherit; }
+
+    .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner {
+      max-width: 1440px; margin: 0 auto; padding: 0.85rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.3rem; box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
+    .brand-title { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+    .brand-pill {
+      font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem;
+      background: var(--brand-primary); color: white; border-radius: 9999px;
+    }
+    .brand-sub { font-size: 0.8rem; color: var(--text-secondary); }
+    .clock-box {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--bg-tertiary); border: 1px solid var(--border-color);
+      padding: 0.45rem 0.85rem; border-radius: var(--radius-md);
+      font-size: 0.85rem; font-family: var(--font-mono); font-weight: 700;
+    }
+    .btn-action {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1rem; border-radius: var(--radius-md);
+      font-size: 0.85rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 0.85rem; border-radius: var(--radius-md);
+      font-size: 0.85rem; font-weight: 600;
+      background: var(--bg-tertiary); border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+    .urgent-bar {
+      background: linear-gradient(90deg, #991b1b, #dc2626);
+      color: white; padding: 0.4rem 1.5rem; display: flex;
+      align-items: center; gap: 0.75rem; font-size: 0.825rem; font-weight: 600;
+    }
+    .main-wrap {
+      max-width: 1440px; width: 100%; margin: 0 auto;
+      padding: 1.5rem; flex: 1;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; box-shadow: var(--shadow-sm);
+    }
+    .stat-val { font-size: 1.5rem; font-weight: 800; line-height: 1.1; }
+    .stat-lbl { font-size: 0.8rem; color: var(--text-secondary); }
+    .dept-container {
+      display: flex; gap: 0.6rem; overflow-x: auto;
+      padding-bottom: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .dept-pill {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1rem; border-radius: 9999px;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      color: var(--text-secondary); font-size: 0.85rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .dept-pill.active {
+      background: var(--brand-primary); color: white; border-color: var(--brand-primary);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    .filter-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.85rem;
+    }
+    .filter-top { display: flex; gap: 0.85rem; align-items: center; flex-wrap: wrap; }
+    .search-input {
+      flex: 1; min-width: 260px; padding: 0.6rem 1rem;
+      border-radius: var(--radius-md); border: 1px solid var(--border-color);
+      background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem;
+    }
+    .select-ctl {
+      padding: 0.6rem 0.85rem; border-radius: var(--radius-md);
+      border: 1px solid var(--border-color); background: var(--bg-primary);
+      color: var(--text-primary); font-size: 0.85rem;
+    }
+    .chips-row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+    .chip {
+      padding: 0.35rem 0.75rem; border-radius: var(--radius-sm);
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-secondary); font-size: 0.8rem; font-weight: 600;
+    }
+    .chip.active { background: var(--brand-secondary); color: white; border-color: var(--brand-secondary); }
+    .cards-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+    }
+    .notice-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+    }
+    .notice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .notice-card.priority-high { border-left: 5px solid var(--urgent-color); }
+    .notice-card.priority-medium { border-left: 5px solid var(--medium-color); }
+    .notice-card.priority-low { border-left: 5px solid var(--low-color); }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+    .badge {
+      font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm); text-transform: uppercase;
+    }
+    .card-title { font-size: 1.05rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.5rem; }
+    .card-body-txt {
+      font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .card-bot {
+      border-top: 1px solid var(--border-color); padding-top: 0.75rem;
+      display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;
+    }
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px); display: flex; align-items: center;
+      justify-content: center; z-index: 50; padding: 1.5rem;
+    }
+    .modal-box {
+      background: var(--bg-secondary); border-radius: var(--radius-xl);
+      width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto;
+      padding: 1.5rem; border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const DEPARTMENTS = [
+      { id: 'ALL', name: 'All Departments', short: 'All', color: '#4f46e5', icon: '🏛️' },
+      { id: 'CSE', name: 'Computer Science & Engg', short: 'CSE', color: '#2563eb', icon: '💻' },
+      { id: 'IT', name: 'Information Technology', short: 'IT', color: '#0284c7', icon: '🌐' },
+      { id: 'ECE', name: 'Electronics & Comm', short: 'ECE', color: '#7c3aed', icon: '⚡' },
+      { id: 'ME', name: 'Mechanical Engg', short: 'ME', color: '#ea580c', icon: '⚙️' },
+      { id: 'CE', name: 'Civil Engineering', short: 'CE', color: '#16a34a', icon: '🏗️' },
+      { id: 'MBA', name: 'Management Studies', short: 'MBA', color: '#d97706', icon: '📊' },
+      { id: 'EXAM', name: 'Examination Cell', short: 'Exam', color: '#dc2626', icon: '📝' },
+      { id: 'ADMIN', name: 'Dean / Administration', short: 'Admin', color: '#475569', icon: '🛡️' }
+    ];
+
+    const CATEGORIES = ['All', 'Urgent Alerts', 'Academic', 'Exams & Results', 'Placements', 'Events', 'General'];
+
+    const SAMPLE_NOTICES = [
+      {
+        id: 'NOT-001',
+        title: 'Submission of Final Year Capstone Project Abstracts & Guide Allotment',
+        department: 'CSE',
+        category: 'Academic',
+        priority: 'high',
+        isPinned: true,
+        refNo: 'CSE/2026/CAP-402',
+        date: '2026-11-19',
+        issuedBy: 'Dr. Ramesh Sharma (HOD CSE)',
+        targetAudience: 'B.Tech CSE - 7th/8th Semester',
+        content: 'All final year B.Tech (CSE) students must submit their Phase-II project abstracts before November 28, 2026. Teams must not exceed 4 members. Ensure plagiarism is strictly below 15% on Turnitin.',
+        attachments: ['Capstone_Guidelines.pdf', 'Guide_Preferences.xlsx']
+      },
+      {
+        id: 'NOT-002',
+        title: 'Schedule for End-Semester Practical & Theory Examinations (Winter 2026)',
+        department: 'EXAM',
+        category: 'Exams & Results',
+        priority: 'high',
+        isPinned: true,
+        refNo: 'COE/EXAM/W26/108',
+        date: '2026-11-18',
+        issuedBy: 'Prof. Anil Kumar (Exam Controller)',
+        targetAudience: 'All Undergraduate & Postgraduate Batches',
+        content: 'End-semester examinations will commence from December 01, 2026 for Practical labs and December 10 for Theory. Hall tickets will be available for download starting Nov 25 on the portal.',
+        attachments: ['Full_Exam_Schedule_Winter2026.pdf']
+      },
+      {
+        id: 'NOT-003',
+        title: 'Campus Recruitment Drive: TechCorp Global Solutions (Package: 14.5 LPA)',
+        department: 'CSE',
+        category: 'Placements',
+        priority: 'high',
+        isPinned: true,
+        refNo: 'TPO/DRIVE/2026/89',
+        date: '2026-11-19',
+        issuedBy: 'Placement Cell',
+        targetAudience: 'Eligible 4th Year CSE, IT, ECE',
+        content: 'TechCorp is conducting campus placements for SDE roles. Eligibility: CGPA >= 7.5 without active backlogs. Online coding round is on Nov 23, 2026 in the Computing Center.',
+        attachments: ['Job_Profile_SDE.pdf']
+      },
+      {
+        id: 'NOT-004',
+        title: 'Hands-on Workshop on Embedded IoT & Autonomous Drone Systems',
+        department: 'ECE',
+        category: 'Events',
+        priority: 'medium',
+        isPinned: false,
+        refNo: 'ECE/WS/2026/044',
+        date: '2026-11-17',
+        issuedBy: 'Dr. M. Sundaram',
+        targetAudience: 'ECE & ME 2nd & 3rd Year',
+        content: '3-day hands-on bootcamp in association with IEEE. Covers microcontroller interfacing using STM32/ESP32, sensor telemetry, and PID motor controllers. Hardware kits included.',
+        attachments: ['Workshop_Flyer.pdf']
+      },
+      {
+        id: 'NOT-005',
+        title: 'Site Visit to Metro Rail Elevated Viaduct & Bridge Construction',
+        department: 'CE',
+        category: 'Events',
+        priority: 'medium',
+        isPinned: false,
+        refNo: 'CE/VISIT/2026/012',
+        date: '2026-11-15',
+        issuedBy: 'Er. S. Mukherjee (Civil HOD)',
+        targetAudience: 'Civil Engineering 3rd & 4th Year',
+        content: 'Field visit to study pre-stressed girder placement and quality inspection protocols. College transport leaves at 8:30 AM on Nov 22 from Main Gate. Helmets provided.',
+        attachments: ['Consent_Form.pdf']
+      },
+      {
+        id: 'NOT-006',
+        title: 'Emergency Wi-Fi & Core Firewall Maintenance Window',
+        department: 'IT',
+        category: 'Urgent Alerts',
+        priority: 'high',
+        isPinned: true,
+        refNo: 'IT/NET/2026/911',
+        date: '2026-11-19',
+        issuedBy: 'IT Infrastructure Directorate',
+        targetAudience: 'Campus-wide',
+        content: 'Network fiber upgrades tonight from 11:30 PM to 4:30 AM. Campus and hostel Wi-Fi will have brief interruptions.',
+        attachments: []
+      }
+    ];
+
+    function StandaloneNoticeBoard() {
+      const [notices, setNotices] = useState(SAMPLE_NOTICES);
+      const [selectedDept, setSelectedDept] = useState('ALL');
+      const [selectedCat, setSelectedCat] = useState('All');
+      const [priority, setPriority] = useState('ALL');
+      const [search, setSearch] = useState('');
+      const [theme, setTheme] = useState('light');
+      const [activeNotice, setActiveNotice] = useState(null);
+      const [showAddModal, setShowAddModal] = useState(false);
+      const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+      useEffect(() => {
+        const t = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+        return () => clearInterval(t);
+      }, []);
+
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+      }, [theme]);
+
+      const filtered = useMemo(() => {
+        return notices.filter(n => {
+          if (selectedDept !== 'ALL' && n.department !== selectedDept) return false;
+          if (selectedCat !== 'All' && n.category !== selectedCat) return false;
+          if (priority !== 'ALL' && n.priority !== priority) return false;
+          if (search) {
+            const q = search.toLowerCase();
+            return n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q) || n.issuedBy.toLowerCase().includes(q);
+          }
+          return true;
+        });
+      }, [notices, selectedDept, selectedCat, priority, search]);
+
+      const handleAdd = (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const newObj = {
+          id: 'NOT-' + Date.now().toString().slice(-4),
+          title: form.title.value,
+          department: form.department.value,
+          category: form.category.value,
+          priority: form.priority.value,
+          isPinned: form.isPinned.checked,
+          refNo: `${form.department.value}/2026/CIRC-${Math.floor(100 + Math.random()*900)}`,
+          date: new Date().toISOString().split('T')[0],
+          issuedBy: form.issuedBy.value || 'Department Office',
+          targetAudience: form.targetAudience.value || 'All Students',
+          content: form.content.value,
+          attachments: ['Document.pdf']
+        };
+        setNotices([newObj, ...notices]);
+        setShowAddModal(false);
+      };
+
+      return (
+        <div className="app-shell">
+          {/* Urgent Announcement Bar */}
+          <div className="urgent-bar">
+            <span>🚨 <strong>URGENT NOTICE:</strong></span>
+            <span>TechCorp 14.5 LPA Placement Registration & End-Sem Datesheets Released</span>
+          </div>
+
+          {/* Header */}
+          <header className="header">
+            <div className="header-inner">
+              <div className="brand">
+                <div className="brand-icon">📢</div>
+                <div>
+                  <div className="brand-title">
+                    CAMPUS PULSE <span className="brand-pill">LIVE</span>
+                  </div>
+                  <div className="brand-sub">Department-Wise Digital Notice Board</div>
+                </div>
+              </div>
+
+              <div className="clock-box">
+                <span style={{ color: '#10b981' }}>●</span>
+                <span>{time}</span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button className="btn-action" onClick={() => setShowAddModal(true)}>
+                  + Post Notice
+                </button>
+                <button className="btn-secondary" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+                  {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="main-wrap">
+            {/* Quick Stats */}
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div style={{ fontSize: '1.75rem' }}>📋</div>
+                <div>
+                  <div className="stat-val">{notices.length}</div>
+                  <div className="stat-lbl">Total Circulars</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: '1.75rem' }}>⚠️</div>
+                <div>
+                  <div className="stat-val">{notices.filter(n => n.priority === 'high').length}</div>
+                  <div className="stat-lbl">Urgent Announcements</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: '1.75rem' }}>📌</div>
+                <div>
+                  <div className="stat-val">{notices.filter(n => n.isPinned).length}</div>
+                  <div className="stat-lbl">Pinned Top</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div style={{ fontSize: '1.75rem' }}>🏫</div>
+                <div>
+                  <div className="stat-val">{filtered.length}</div>
+                  <div className="stat-lbl">Showing in Current View</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Department Selection */}
+            <div className="dept-container">
+              {DEPARTMENTS.map(d => {
+                const count = d.id === 'ALL' ? notices.length : notices.filter(n => n.department === d.id).length;
+                return (
+                  <button
+                    key={d.id}
+                    className={`dept-pill ${selectedDept === d.id ? 'active' : ''}`}
+                    onClick={() => setSelectedDept(d.id)}
+                  >
+                    <span>{d.icon}</span>
+                    <span>{d.name}</span>
+                    <span style={{ opacity: 0.8, fontSize: '0.75rem' }}>({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Search & Filter Toolbar */}
+            <div className="filter-card">
+              <div className="filter-top">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Search notices by keyword, title, or teacher..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                <select className="select-ctl" value={priority} onChange={e => setPriority(e.target.value)}>
+                  <option value="ALL">All Priorities</option>
+                  <option value="high">High / Urgent</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+                { (search || priority !== 'ALL' || selectedDept !== 'ALL' || selectedCat !== 'All') && (
+                  <button className="btn-secondary" onClick={() => { setSearch(''); setPriority('ALL'); setSelectedDept('ALL'); setSelectedCat('All'); }}>
+                    Reset
+                  </button>
+                )}
+              </div>
+
+              <div className="chips-row">
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>CATEGORY:</span>
+                {CATEGORIES.map(c => (
+                  <button
+                    key={c}
+                    className={`chip ${selectedCat === c ? 'active' : ''}`}
+                    onClick={() => setSelectedCat(c)}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notices Cards Grid */}
+            <div className="cards-grid">
+              {filtered.map(notice => (
+                <div
+                  key={notice.id}
+                  className={`notice-card priority-${notice.priority}`}
+                  onClick={() => setActiveNotice(notice)}
+                >
+                  <div>
+                    <div className="card-top">
+                      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                        <span className="badge" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                          {notice.department}
+                        </span>
+                        <span className="badge" style={{ 
+                          background: notice.priority === 'high' ? '#fef2f2' : '#fffbeb',
+                          color: notice.priority === 'high' ? '#dc2626' : '#d97706'
+                        }}>
+                          {notice.priority.toUpperCase()}
+                        </span>
+                      </div>
+                      {notice.isPinned && <span>📌</span>}
+                    </div>
+
+                    <h3 className="card-title">{notice.title}</h3>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                      Audience: {notice.targetAudience}
+                    </div>
+                    <p className="card-body-txt">{notice.content}</p>
+                  </div>
+
+                  <div className="card-bot">
+                    <div>
+                      <strong>{notice.issuedBy}</strong>
+                      <div style={{ color: 'var(--text-muted)' }}>{notice.date}</div>
+                    </div>
+                    <span style={{ color: 'var(--brand-primary)', fontWeight: 600 }}>Read Circular →</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filtered.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '4rem 1rem', background: 'var(--bg-secondary)', borderRadius: '16px', border: '2px dashed var(--border-color)' }}>
+                <h3>No circulars found matching your search.</h3>
+                <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Try clearing your filters or search terms.</p>
+              </div>
+            )}
+          </main>
+
+          {/* Notice Detail Popover Modal */}
+          {activeNotice && (
+            <div className="modal-bg" onClick={() => setActiveNotice(null)}>
+              <div className="modal-box" onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                  <span className="badge" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                    REF: {activeNotice.refNo}
+                  </span>
+                  <button onClick={() => setActiveNotice(null)} style={{ fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                </div>
+
+                <h2 style={{ fontSize: '1.35rem', marginBottom: '0.85rem' }}>{activeNotice.title}</h2>
+                <div style={{ background: 'var(--bg-primary)', padding: '0.85rem', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  <div><strong>Issued By:</strong> {activeNotice.issuedBy}</div>
+                  <div><strong>Target Audience:</strong> {activeNotice.targetAudience}</div>
+                  <div><strong>Date:</strong> {activeNotice.date}</div>
+                </div>
+
+                <div style={{ lineHeight: 1.7, whiteSpace: 'pre-line', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+                  {activeNotice.content}
+                </div>
+
+                {activeNotice.attachments && activeNotice.attachments.length > 0 && (
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginBottom: '1rem' }}>
+                    <strong>Attachments ({activeNotice.attachments.length}):</strong>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      {activeNotice.attachments.map((a, i) => (
+                        <span key={i} style={{ background: 'var(--bg-primary)', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem' }}>
+                          📎 {a}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                  <button className="btn-secondary" onClick={() => window.print()}>🖨️ Print Circular</button>
+                  <button className="btn-action" onClick={() => setActiveNotice(null)}>Close</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Post Notice Form Modal */}
+          {showAddModal && (
+            <div className="modal-bg" onClick={() => setShowAddModal(false)}>
+              <div className="modal-box" onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.2rem' }}>Post New Department Circular</h3>
+                  <button onClick={() => setShowAddModal(false)} style={{ fontSize: '1.2rem' }}>✕</button>
+                </div>
+
+                <form onSubmit={handleAdd}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Notice Title *</label>
+                      <input name="title" required className="search-input" style={{ width: '100%' }} placeholder="Title of circular..." />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Department *</label>
+                        <select name="department" className="select-ctl" style={{ width: '100%' }}>
+                          {DEPARTMENTS.filter(d => d.id !== 'ALL').map(d => (
+                            <option key={d.id} value={d.id}>{d.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Priority *</label>
+                        <select name="priority" className="select-ctl" style={{ width: '100%' }}>
+                          <option value="high">High / Urgent</option>
+                          <option value="medium">Medium</option>
+                          <option value="low">Low</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Category</label>
+                        <select name="category" className="select-ctl" style={{ width: '100%' }}>
+                          {CATEGORIES.filter(c => c !== 'All').map(c => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Target Audience</label>
+                        <input name="targetAudience" className="search-input" style={{ width: '100%' }} placeholder="e.g. 3rd Year CSE" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Issued By (Faculty / Office)</label>
+                      <input name="issuedBy" className="search-input" style={{ width: '100%' }} placeholder="e.g. Dr. A. K. Sharma (HOD)" />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Notice Content *</label>
+                      <textarea name="content" required rows="4" className="search-input" style={{ width: '100%' }} placeholder="Enter circular details, instructions, dates..."></textarea>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                        <input type="checkbox" name="isPinned" /> Pin to top of board
+                      </label>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button type="button" className="btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
+                      <button type="submit" className="btn-action">Publish Notice</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<StandaloneNoticeBoard />);
+  </script>
+</body>
+</html>
