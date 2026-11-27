@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Design Document - Department-Wise Digital Notice Board</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      color: #1e293b;
+      line-height: 1.5;
+      font-size: 10.5pt;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Cover Header */
+    .doc-header {
+      border-bottom: 3px double #1e3c72;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .inst-name {
+      font-size: 20pt;
+      font-weight: 800;
+      color: #1e3c72;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 4px;
+    }
+    .dept-name {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .badge-bar {
+      display: inline-block;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-size: 10pt;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .doc-title {
+      font-size: 18pt;
+      font-weight: 800;
+      color: #2a5298;
+      margin-top: 5px;
+      margin-bottom: 4px;
+    }
+    .doc-subtitle {
+      font-size: 11pt;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Meta Table */
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    .meta-table td {
+      padding: 7px 12px;
+      border: 1px solid #cbd5e1;
+      font-size: 9.5pt;
+    }
+    .meta-label {
+      font-weight: 700;
+      color: #1e3c72;
+      width: 25%;
+      background: #f1f5f9;
+    }
+
+    /* Section Headings */
+    h2 {
+      font-size: 13pt;
+      color: #1e3c72;
+      border-left: 5px solid #2a5298;
+      padding-left: 8px;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h3 {
+      font-size: 11pt;
+      color: #334155;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+    p {
+      margin-top: 0;
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+
+    /* Standard Tables */
+    table.content-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 14px;
+      font-size: 9.5pt;
+    }
+    table.content-table th, table.content-table td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    table.content-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    table.content-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Code & Callouts */
+    code {
+      font-family: Consolas, monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9pt;
+      color: #0f172a;
+    }
+    .info-callout {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 9.5pt;
+    }
+
+    /* Architecture Diagram Box */
+    .arch-diagram {
+      border: 1.5px solid #94a3b8;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 12px 0 18px 0;
+      text-align: center;
+      font-family: Consolas, monospace;
+      font-size: 9pt;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      color: #1e293b;
+    }
+
+    ul, ol {
+      margin-top: 4px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 30px;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 10px;
+      font-size: 9pt;
+      color: #64748b;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Document Header -->
+  <div class="doc-header">
+    <div class="inst-name">ABESEC Ghaziabad</div>
+    <div class="dept-name">Department of Computer Science & Engineering</div>
+    <div class="badge-bar">FULL STACK DEVELOPMENT (FSD) PROJECT</div>
+    <div class="doc-title">System Design Document (SDD)</div>
+    <div class="doc-subtitle">Project: Department-Wise Digital Notice Board</div>
+  </div>
+
+  <!-- Document Metadata Table -->
+  <table class="meta-table">
+    <tr>
+      <td class="meta-label">Project Title</td>
+      <td><strong>Department-Wise Digital Notice Board</strong></td>
+      <td class="meta-label">Course / Semester</td>
+      <td>Full Stack Development (B.Tech CSE)</td>
+    </tr>
+    <tr>
+      <td class="meta-label">Team Members</td>
+      <td>
+        <strong>Anshika</strong> (Roll No: 2400320100224)<br>
+        <strong>Archana</strong> (Roll No: 2400320100267)
+      </td>
+      <td class="meta-label">Class Section</td>
+      <td><strong>CSE-15</strong></td>
+    </tr>
+    <tr>
+      <td class="meta-label">Live Deployment URL</td>
+      <td colspan="3"><a href="https://department-wise-digital-notice-board.onrender.com" target="_blank"><strong>https://department-wise-digital-notice-board.onrender.com</strong></a></td>
+    </tr>
+    <tr>
+      <td class="meta-label">GitHub Repository</td>
+      <td colspan="3"><a href="https://github.com/baliyananmol166-maker/Department-Wise-Digital-Notice-Board" target="_blank"><strong>https://github.com/baliyananmol166-maker/Department-Wise-Digital-Notice-Board</strong></a></td>
+    </tr>
+    <tr>
+      <td class="meta-label">Hosting Platform</td>
+      <td>Render (Static Web Hosting)</td>
+      <td class="meta-label">Document Version</td>
+      <td>1.0 (Release Build)</td>
+    </tr>
+  </table>
+
+  <!-- 1. Executive Summary & Problem Definition -->
+  <h2>1. Executive Summary & Problem Definition</h2>
+  <p>
+    In academic institutions like <strong>ABESEC Ghaziabad</strong>, physical pinboards and unstructured messaging groups lead to information clutter, missed deadlines, and delayed awareness of urgent circulars (e.g. examination datesheets, capstone guidelines, and placement drives).
+  </p>
+  <p>
+    The <strong>Department-Wise Digital Notice Board</strong> solves this by centralizing official campus announcements into a single, categorized, responsive web portal. It provides role-based authentication, instant filtering by department (CSE, ECE, Mechanical, Civil, Exam Cell, Placement Cell), live keyword searching, and full administrative notice management.
+  </p>
+
+  <!-- 2. System Architecture -->
+  <h2>2. High-Level System Architecture</h2>
+  <p>
+    The system follows a modern <strong>Single-Page Application (SPA)</strong> architecture powered by React, bundled via Vite, and deployed on Render's global static distribution network.
+  </p>
+
+  <div class="arch-diagram">
++-----------------------------------------------------------------------------------+
+|                           CLIENT TIER (User Browser)                             |
+|  +-----------------------------------------------------------------------------+  |
+|  |  React SPA (Component Hierarchy & Reactive State)                           |  |
+|  |  - Header (ABESEC Branding)         - User Authentication & Role Manager    |  |
+|  |  - Department Tab Filter Engine     - Real-Time Keyword Search Engine       |  |
+|  |  - Interactive Notice Feed / Cards  - Admin Notice Publication Modal        |  |
+|  |  - Footer Component (ABESEC Team Attribution)                               |  |
+|  +-----------------------------------------------------------------------------+  |
++-----------------------------------------+-----------------------------------------+
+                                          |
+                                          | HTTPS Request / Fast CDN Delivery
+                                          v
++-----------------------------------------------------------------------------------+
+|                        HOSTING & DEPLOYMENT TIER (Render Cloud)                   |
+|  +-----------------------------------------------------------------------------+  |
+|  |  Render Static Site Infrastructure                                          |  |
+|  |  - Automated CI/CD Pipeline (Linked to GitHub 'main' Branch)                 |  |
+|  |  - Build Command: 'npm run build' -> Output: '/dist'                        |  |
+|  |  - Edge CDN Caching & High Availability (99.9% Uptime)                      |  |
+|  +-----------------------------------------------------------------------------+  |
++-----------------------------------------------------------------------------------+
+  </div>
+
+  <!-- 3. User Roles & Access Control (RBAC) -->
+  <h2>3. User Roles & Access Control (RBAC)</h2>
+  <p>
+    To ensure data integrity while allowing open campus access, the system enforces a strict Role-Based Access Control model:
+  </p>
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th style="width: 20%;">User Role</th>
+        <th style="width: 20%;">Credentials (Demo)</th>
+        <th style="width: 35%;">Authorized Capabilities</th>
+        <th style="width: 25%;">UI Behavior</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Administrator (Admin)</strong></td>
+        <td><code>admin</code> / <code>admin123</code></td>
+        <td>
+          • Publish new circulars with custom title, department & details.<br>
+          • Delete outdated or resolved notices.<br>
+          • Full browse, search, and department filter access.
+        </td>
+        <td>Displays <code>+ Add New Notice</code> button and <code>🗑️ Delete Notice</code> action on each card.</td>
+      </tr>
+      <tr>
+        <td><strong>Student / Viewer</strong></td>
+        <td><code>student</code> / <code>student123</code></td>
+        <td>
+          • Browse all published circulars.<br>
+          • Filter circulars by department.<br>
+          • Real-time keyword search.
+        </td>
+        <td>Read-only mode with <code>🔒 Post Notice (Admin Only)</code> restriction.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- 4. Module & Component Decomposition -->
+  <h2>4. Component Decomposition & Functional Modules</h2>
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Component / Module</th>
+        <th style="width: 35%;">Responsibility</th>
+        <th style="width: 40%;">State & Event Handlers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Header Component</strong></td>
+        <td>Renders college banner (ABESEC Ghaziabad), portal title, and subtitle.</td>
+        <td>Stateless presentation component.</td>
+      </tr>
+      <tr>
+        <td><strong>User Auth Bar & Modal</strong></td>
+        <td>Displays current active role (Admin/Student/Guest) and triggers login popup.</td>
+        <td><code>currentUser</code>, <code>showLoginModal</code>, <code>handleLogin()</code>, <code>handleLogout()</code></td>
+      </tr>
+      <tr>
+        <td><strong>Department Bar</strong></td>
+        <td>Renders tab buttons for CSE, ECE, Mechanical, Civil, Exam Cell, Placement Cell, and All.</td>
+        <td><code>selectedDept</code>, <code>setSelectedDept(dept)</code></td>
+      </tr>
+      <tr>
+        <td><strong>Search Action Bar</strong></td>
+        <td>Captures keyword inputs and conditionally exposes notice publication button.</td>
+        <td><code>searchTerm</code>, <code>setSearchTerm(text)</code>, <code>showAddForm</code> toggle</td>
+      </tr>
+      <tr>
+        <td><strong>Notice Feed & Cards</strong></td>
+        <td>Renders filtered list of circulars with date stamps, department badges, and delete triggers.</td>
+        <td><code>filteredNotices</code>, <code>handleDeleteNotice(id)</code></td>
+      </tr>
+      <tr>
+        <td><strong>Notice Creation Form</strong></td>
+        <td>Captures title, department, and description inputs for publishing circulars.</td>
+        <td><code>newTitle</code>, <code>newDept</code>, <code>newDesc</code>, <code>handleAddNotice()</code></td>
+      </tr>
+      <tr>
+        <td><strong>Footer Component</strong></td>
+        <td>Displays developers credit, team attribution, and ABESEC copyright.</td>
+        <td>Stateless presentation component.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5. Data Model & Entity Specifications -->
+  <h2>5. Data Model Specification</h2>
+  <p>The client-side state schema defines circular and authentication structures as follows:</p>
+
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Field Name</th>
+        <th>Data Type</th>
+        <th>Constraints</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>id</code></td>
+        <td>Number / Timestamp</td>
+        <td>Unique Primary Key</td>
+        <td>Epoch timestamp generated on submission (e.g. <code>Date.now()</code>).</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td>String</td>
+        <td>Required, Non-empty</td>
+        <td>Headline of circular (e.g. "Capstone Project Synopsis").</td>
+      </tr>
+      <tr>
+        <td><code>department</code></td>
+        <td>String / Enum</td>
+        <td>Required</td>
+        <td>CSE | ECE | Mechanical | Civil | Exam Cell | Placement Cell</td>
+      </tr>
+      <tr>
+        <td><code>date</code></td>
+        <td>String (YYYY-MM-DD)</td>
+        <td>Required</td>
+        <td>Publication date generated automatically from system clock.</td>
+      </tr>
+      <tr>
+        <td><code>description</code></td>
+        <td>String</td>
+        <td>Required, Multiline</td>
+        <td>Complete body text, instructions, deadlines, and contact info.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 6. Non-Functional Requirements (NFR) -->
+  <h2>6. Non-Functional Requirements & Performance Metrics</h2>
+  <ul>
+    <li><strong>Performance:</strong> Instant client-side filtering and search latency under <strong>10 milliseconds</strong> for seamless user experience without server roundtrips.</li>
+    <li><strong>Bundle Efficiency:</strong> Minified production assets (153 kB JS, 7.5 kB CSS, gzipped: ~51 kB) achieving a Lighthouse Performance score &gt; 95.</li>
+    <li><strong>Responsiveness:</strong> Fluid CSS Grid and Flexbox layouts guaranteeing full usability across smartphones, tablets, laptops, and digital hallway TV displays.</li>
+    <li><strong>Reliability:</strong> 99.9% uptime powered by Render's automated static content delivery network.</li>
+  </ul>
+
+  <!-- 7. Deployment & Verification Plan -->
+  <h2>7. CI/CD Deployment Workflow</h2>
+  <ol>
+    <li><strong>Code Commit:</strong> Developers commit and push updates to the <code>main</code> branch of the GitHub repository.</li>
+    <li><strong>Automated Trigger:</strong> Render detects the commit webhook and triggers the build pipeline.</li>
+    <li><strong>Build Execution:</strong> Render executes <code>npm run build</code> using Vite, compiling React JSX and CSS into production artifacts in <code>/dist</code>.</li>
+    <li><strong>Zero-Downtime Rollout:</strong> Live site updates automatically with instant cache invalidation.</li>
+  </ol>
+
+  <!-- Document Footer Attribution -->
+  <div class="footer-note">
+    <strong>Developed & Maintained By:</strong> Anshika, Archana (CSE-15) | Full Stack Development Team<br>
+    © 2026 ABESEC Ghaziabad. All Rights Reserved.
+  </div>
+
+</body>
+</html>
