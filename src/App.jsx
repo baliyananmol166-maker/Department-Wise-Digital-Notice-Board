@@ -68,9 +68,66 @@ export default function App() {
   const [newDept, setNewDept] = useState("CSE");
   const [newDesc, setNewDesc] = useState("");
 
-  // Function to add a new notice
+  // State 6: User Authentication & Role Management
+  // Default is logged in as Student (can also switch to Admin)
+  const [currentUser, setCurrentUser] = useState({
+    username: "student",
+    role: "Student" // "Admin" or "Student"
+  });
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [inputUsername, setInputUsername] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  // Handle Login Authentication
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoginError("");
+
+    const username = inputUsername.trim().toLowerCase();
+    const password = inputPassword.trim();
+
+    if (username === "admin" && password === "admin123") {
+      setCurrentUser({ username: "admin", role: "Admin" });
+      setShowLoginModal(false);
+      setInputUsername("");
+      setInputPassword("");
+    } else if (username === "student" && password === "student123") {
+      setCurrentUser({ username: "student", role: "Student" });
+      setShowLoginModal(false);
+      setInputUsername("");
+      setInputPassword("");
+    } else {
+      setLoginError("Invalid credentials! Please use valid Admin or Student login.");
+    }
+  };
+
+  // Quick fill demo credentials
+  const fillCredentials = (role) => {
+    if (role === "admin") {
+      setInputUsername("admin");
+      setInputPassword("admin123");
+    } else {
+      setInputUsername("student");
+      setInputPassword("student123");
+    }
+    setLoginError("");
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setShowAddForm(false);
+  };
+
+  // Function to add a new notice (Admin only)
   const handleAddNotice = (e) => {
     e.preventDefault();
+
+    if (currentUser?.role !== "Admin") {
+      alert("Permission Denied: Only Admin can publish notices! Please login as Admin.");
+      return;
+    }
 
     if (!newTitle.trim() || !newDesc.trim()) {
       alert("Please enter title and description!");
@@ -80,7 +137,7 @@ export default function App() {
     const today = new Date().toISOString().split("T")[0];
 
     const newNoticeObj = {
-      id: Date.now(), // unique ID using timestamp
+      id: Date.now(),
       title: newTitle,
       department: newDept,
       date: today,
@@ -96,10 +153,17 @@ export default function App() {
     setShowAddForm(false);
   };
 
-  // Function to delete a notice
+  // Function to delete a notice (Admin only)
   const handleDeleteNotice = (id) => {
-    const updatedList = notices.filter((item) => item.id !== id);
-    setNotices(updatedList);
+    if (currentUser?.role !== "Admin") {
+      alert("Permission Denied: Only Admin can delete notices! Please login as Admin.");
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete this notice?")) {
+      const updatedList = notices.filter((item) => item.id !== id);
+      setNotices(updatedList);
+    }
   };
 
   // Filter notices based on selected department AND search text
@@ -114,34 +178,84 @@ export default function App() {
 
   return (
     <div className="container">
-      {/* College / Board Header */}
+      {/* College / Board Header - with ABESEC Ghaziabad */}
       <header className="header">
+        <div className="college-banner">ABESEC Ghaziabad</div>
         <h1>🎓 College Digital Notice Board</h1>
         <p>Department-Wise Campus Notices & Circulars</p>
       </header>
+
+      {/* User Status & Authentication Bar */}
+      <div className="user-auth-bar">
+        <div className="user-badge-container">
+          {currentUser ? (
+            <span className={`user-badge ${currentUser.role.toLowerCase()}`}>
+              {currentUser.role === "Admin" ? "👑 Admin Mode" : "🎓 Student Mode"} ({currentUser.username})
+            </span>
+          ) : (
+            <span className="user-badge guest">👁️ Guest (Not Logged In)</span>
+          )}
+
+          <span className="role-hint">
+            {currentUser?.role === "Admin"
+              ? "Full Access: Can publish and delete notices"
+              : "Read-Only: Can browse, filter, and search notices"}
+          </span>
+        </div>
+
+        <div className="auth-btn-group">
+          {currentUser ? (
+            <>
+              <button className="btn btn-switch" onClick={() => setShowLoginModal(true)}>
+                Switch Role / Account
+              </button>
+              <button className="btn btn-logout" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <button className="btn btn-login" onClick={() => setShowLoginModal(true)}>
+              🔑 Login to Account
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Top Action Bar: Search and Add Button */}
       <div className="action-bar">
         <input
           type="text"
           className="search-input"
-          placeholder="🔍 Search notices by keyword..."
+          placeholder="🔍 Search notices by keyword or topic..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <button
-          className="btn btn-add"
-          onClick={() => setShowAddForm(!showAddForm)}
-        >
-          {showAddForm ? "✖ Close Form" : "+ Add New Notice"}
-        </button>
+        {currentUser?.role === "Admin" ? (
+          <button
+            className="btn btn-add"
+            onClick={() => setShowAddForm(!showAddForm)}
+          >
+            {showAddForm ? "✖ Close Form" : "+ Add New Notice"}
+          </button>
+        ) : (
+          <button
+            className="btn btn-add-disabled"
+            onClick={() => {
+              alert("Admin privilege required to add new notices! Please login as Admin.");
+              setShowLoginModal(true);
+            }}
+            title="Login as Admin to publish notices"
+          >
+            🔒 Post Notice (Admin Only)
+          </button>
+        )}
       </div>
 
-      {/* Simple Form to Add New Notice (Shown when showAddForm is true) */}
-      {showAddForm && (
+      {/* Simple Form to Add New Notice (Shown when showAddForm is true and user is Admin) */}
+      {showAddForm && currentUser?.role === "Admin" && (
         <form className="add-form" onSubmit={handleAddNotice}>
-          <h3>Post a New Notice</h3>
+          <h3>Post a New Notice (Admin Portal)</h3>
 
           <div className="form-group">
             <label>Notice Title:</label>
@@ -217,13 +331,17 @@ export default function App() {
               <p className="notice-desc">{notice.description}</p>
 
               <div className="card-bottom">
-                <button
-                  className="btn-delete"
-                  onClick={() => handleDeleteNotice(notice.id)}
-                  title="Delete notice"
-                >
-                  🗑️ Delete
-                </button>
+                {currentUser?.role === "Admin" ? (
+                  <button
+                    className="btn-delete"
+                    onClick={() => handleDeleteNotice(notice.id)}
+                    title="Delete notice as Admin"
+                  >
+                    🗑️ Delete Notice
+                  </button>
+                ) : (
+                  <span className="read-only-tag">📖 Verified Notice</span>
+                )}
               </div>
             </div>
           ))
@@ -234,9 +352,76 @@ export default function App() {
         )}
       </div>
 
-      {/* Simple Footer */}
+      {/* Login / Role Selection Modal */}
+      {showLoginModal && (
+        <div className="modal-backdrop" onClick={() => setShowLoginModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🔐 User Role Login (FSD Project)</h3>
+              <button className="modal-close-btn" onClick={() => setShowLoginModal(false)}>✖</button>
+            </div>
+
+            <div className="credentials-info-box">
+              <p><strong>Available Login Credentials:</strong></p>
+              <div className="cred-row">
+                <span>👑 <strong>Admin:</strong> <code>admin</code> / <code>admin123</code> (Full Control)</span>
+                <button type="button" className="btn-quick-fill" onClick={() => fillCredentials("admin")}>
+                  Auto-fill
+                </button>
+              </div>
+              <div className="cred-row">
+                <span>🎓 <strong>Student:</strong> <code>student</code> / <code>student123</code> (Read-Only)</span>
+                <button type="button" className="btn-quick-fill" onClick={() => fillCredentials("student")}>
+                  Auto-fill
+                </button>
+              </div>
+            </div>
+
+            {loginError && <div className="error-message">{loginError}</div>}
+
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="form-group">
+                <label>Username:</label>
+                <input
+                  type="text"
+                  placeholder="Enter username (admin / student)"
+                  value={inputUsername}
+                  onChange={(e) => setInputUsername(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password:</label>
+                <input
+                  type="password"
+                  placeholder="Enter password (admin123 / student123)"
+                  value={inputPassword}
+                  onChange={(e) => setInputPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowLoginModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-submit-login">
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Footer component with ABESEC Ghaziabad Details */}
       <footer className="footer">
-        <p>© 2026 Department Digital Notice Board | Student Frontend Project</p>
+        <p className="footer-dev">
+          <strong>Developed & Maintained By:</strong> Anshika, Archana (CSE-15)
+        </p>
+        <p className="footer-team">Full Stack Development Team</p>
+        <p className="footer-copy">© 2026 ABESEC Ghaziabad. All Rights Reserved.</p>
       </footer>
     </div>
   );
