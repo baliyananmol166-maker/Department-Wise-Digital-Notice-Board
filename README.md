@@ -75,24 +75,6 @@ The application features role-based access control for **Administrators** and **
 
 ---
 
-## 🚀 How to Deploy on Render (Step-by-Step Guide)
-
-If deploying or re-linking to Render manually:
-
-1. Go to [https://dashboard.render.com/](https://dashboard.render.com/) and sign in with GitHub.
-2. Click **New +** and select **Static Site**.
-3. Connect your GitHub repository:
-   `https://github.com/baliyananmol166-maker/Department-Wise-Digital-Notice-Board`
-4. Configure the build settings:
-   - **Name:** `department-wise-digital-notice-board`
-   - **Branch:** `main`
-   - **Build Command:** `npm run build`
-   - **Publish Directory:** `dist`
-5. Click **Create Static Site**.
-6. Render will build and deploy the site in ~1 minute and provide your live link!
-
----
-
 ## 💻 Running the Project Locally
 
 ```bash
